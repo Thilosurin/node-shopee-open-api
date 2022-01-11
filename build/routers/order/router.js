@@ -6,6 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const order_controller_1 = require("./order.controller");
 const orderRouter = express_1.default.Router();
-orderRouter.get("/list/:accessToken", order_controller_1.getOrderList);
-orderRouter.post("/detail/list/:accessToken", order_controller_1.getOrderDetailList);
+orderRouter.get("/list", order_controller_1.getOrderList);
+orderRouter.post("/detail/list", order_controller_1.getOrderDetailList);
 exports.default = orderRouter;

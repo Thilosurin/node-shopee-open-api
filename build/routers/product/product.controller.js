@@ -17,12 +17,9 @@ let __PATH__;
 exports.getProductList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/get_item_list";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
         const { offset = 0, page_size = 10, item_status = "NORMAL" } = req.query;
         console.log({ query: req.query });
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const urlWithParams = `${url}&offset=${offset}&page_size=${page_size}&item_status=${item_status}`;
         const response = yield (0, node_fetch_1.fetch)(urlWithParams);
@@ -36,14 +33,11 @@ exports.getProductList = (0, async_1.asyncHandler)((req, res, next) => __awaiter
 exports.getProductDetailListByProductIds = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/get_item_base_info";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
         const { productIds } = req.body;
         if (!productIds || !productIds.length) {
             throw new Error("body parameter productIds is required!");
         }
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const productIdList = productIds.join(",");
         const urlWithParams = `${url}&item_id_list=${productIdList}`;
@@ -58,12 +52,9 @@ exports.getProductDetailListByProductIds = (0, async_1.asyncHandler)((req, res, 
 exports.createProduct = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/add_item";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
         const reqBody = req.body;
         console.log({ reqBody });
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const response = yield (0, node_fetch_1.apiPostJSON)({
             url: urlHandler.getURL(),
             body: reqBody,
@@ -78,11 +69,10 @@ exports.createProduct = (0, async_1.asyncHandler)((req, res, next) => __awaiter(
 exports.getProductVariantByProductId = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/get_model_list";
     try {
-        const { accessToken, productId } = req.params;
-        if (!accessToken || !productId) {
-            throw new Error("parameter accessToken and productId is required!");
-        }
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const { productId } = req.params;
+        if (!productId)
+            throw new Error("parameter productId is required!");
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const response = yield (0, node_fetch_1.fetch)(`${url}&item_id=${productId}`);
         res.status(200).json(yield response.json());
@@ -95,11 +85,8 @@ exports.getProductVariantByProductId = (0, async_1.asyncHandler)((req, res, next
 exports.getCategoryList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/get_category";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
         const { language = "th" } = req.query;
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const response = yield (0, node_fetch_1.fetch)(`${url}&language=${language}`);
         res.status(200).json(yield response.json());
@@ -112,13 +99,10 @@ exports.getCategoryList = (0, async_1.asyncHandler)((req, res, next) => __awaite
 exports.getBrandList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/get_brand_list";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
         const { offset = 1, page_size = 100, status = 1, category_id, language = "th", } = req.query;
         if (!category_id)
             throw new Error("query param category_id is required!");
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const urlWithParams = `${url}&offset=${offset}&page_size=${page_size}&status=${status}&category_id=${category_id}&language=${language}`;
         const response = yield (0, node_fetch_1.fetch)(urlWithParams);
@@ -132,13 +116,10 @@ exports.getBrandList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(v
 exports.getAttributeList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/product/get_attributes";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
         const { category_id, language = "th" } = req.query;
         if (!category_id)
             throw new Error("query param category_id is required!");
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const urlWithParams = `${url}&category_id=${category_id}&language=${language}`;
         const response = yield (0, node_fetch_1.fetch)(urlWithParams);

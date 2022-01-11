@@ -3,6 +3,6 @@ import { getLogisticsList } from "./logistics.controller";
 
 const logisticsRouter: Router = express.Router();
 
-logisticsRouter.get("/list/:accessToken", getLogisticsList);
+logisticsRouter.get("/list", getLogisticsList);
 
 export default logisticsRouter;

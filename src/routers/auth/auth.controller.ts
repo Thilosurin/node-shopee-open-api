@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { Request, Response } from "express";
 import { asyncHandler } from "../../middleware/async";
 import { URLHandler } from "../../utils/url";
@@ -42,7 +44,22 @@ export const getAccessToken = asyncHandler(
           partner_id: urlHandler.partnerId,
         },
       });
-      res.status(200).json(await response.json());
+      const data = await response.json();
+
+      fs.writeFile(
+        path.join(__dirname, "../../../", "token.json"),
+        JSON.stringify({
+          accessToken: data["access_token"],
+          refreshToken: data["refresh_token"],
+        }),
+        "utf-8",
+        (err) => {
+          if (err) throw err;
+          console.log("complete");
+        }
+      );
+
+      res.status(200).json(data);
     } catch (error) {
       console.error(error);
       res.status(500).json({ status: 500, message: "Error", error });

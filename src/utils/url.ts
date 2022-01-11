@@ -1,4 +1,21 @@
+import fs from "fs";
+import path from "path";
 import { createHmac } from "crypto";
+
+const tokenz = { accessToken: "" };
+
+function getTokenFromJSONFile(token: {}) {
+  const pathToken = path.join(__dirname, "../../", "token.json");
+  fs.readFile(pathToken, "utf8", (err, data) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const tokenObj = JSON.parse(data);
+      Object.assign(token, tokenObj);
+    }
+  });
+}
+getTokenFromJSONFile(tokenz);
 
 export class URLHandler {
   private host = "https://partner.test-stable.shopeemobile.com";
@@ -7,12 +24,9 @@ export class URLHandler {
   private partnerKey =
     "95fff60c1cfd7c8be2488223d66f0440e0ad180e446a9654ee2211109ca6d1ea";
   shopId = 37573;
+  private accessToken = tokenz["accessToken"];
 
-  set setAccessToken(value: string) {
-    this.accessToken = value;
-  }
-
-  constructor(private path: string, private accessToken: string = "") {}
+  constructor(private path: string) {}
 
   computeSHA256(str: string): string {
     return createHmac("sha256", this.partnerKey).update(str).digest("hex");

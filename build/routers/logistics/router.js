@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const logistics_controller_1 = require("./logistics.controller");
 const logisticsRouter = express_1.default.Router();
-logisticsRouter.get("/list/:accessToken", logistics_controller_1.getLogisticsList);
+logisticsRouter.get("/list", logistics_controller_1.getLogisticsList);
 exports.default = logisticsRouter;

@@ -8,10 +8,7 @@ export const getLogisticsList = asyncHandler(
   async (req: Request, res: Response, next: () => PromiseLike<never>) => {
     __PATH__ = "/api/v2/logistics/get_channel_list";
     try {
-      const { accessToken } = req.params;
-      if (!accessToken) throw new Error("parameter accessToken is required!");
-
-      const urlHandler = new URLHandler(__PATH__, accessToken);
+      const urlHandler = new URLHandler(__PATH__);
       const url = urlHandler.getURL();
 
       const response = await fetch(url);

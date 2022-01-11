@@ -19,8 +19,13 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAccessToken = exports.getUrlFromShopee = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const async_1 = require("../../middleware/async");
 const url_1 = require("../../utils/url");
 const node_fetch_1 = require("../../utils/node-fetch");
@@ -57,7 +62,16 @@ exports.getAccessToken = (0, async_1.asyncHandler)((req, res, next) => __awaiter
                 partner_id: urlHandler.partnerId,
             },
         });
-        res.status(200).json(yield response.json());
+        const data = yield response.json();
+        fs_1.default.writeFile(path_1.default.join(__dirname, "../../../", "token.json"), JSON.stringify({
+            accessToken: data["access_token"],
+            refreshToken: data["refresh_token"],
+        }), "utf-8", (err) => {
+            if (err)
+                throw err;
+            console.log("complete");
+        });
+        res.status(200).json(data);
     }
     catch (error) {
         console.error(error);

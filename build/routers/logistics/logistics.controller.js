@@ -17,10 +17,7 @@ let __PATH__;
 exports.getLogisticsList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     __PATH__ = "/api/v2/logistics/get_channel_list";
     try {
-        const { accessToken } = req.params;
-        if (!accessToken)
-            throw new Error("parameter accessToken is required!");
-        const urlHandler = new url_1.URLHandler(__PATH__, accessToken);
+        const urlHandler = new url_1.URLHandler(__PATH__);
         const url = urlHandler.getURL();
         const response = yield (0, node_fetch_1.fetch)(url);
         res.status(200).json(yield response.json());
