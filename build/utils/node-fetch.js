@@ -9,11 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductList = void 0;
-const async_1 = require("../../middleware/async");
-exports.getProductList = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        res.status(200).json({ status: 200, message: "Hello World!" });
-    }
-    catch (error) { }
-}));
+exports.apiPostJSON = exports.fetch = void 0;
+const importDynamic = new Function("modulePath", "return import(modulePath)");
+function fetch(...args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const module = yield importDynamic("node-fetch");
+        return module.default(...args);
+    });
+}
+exports.fetch = fetch;
+const apiPostJSON = ({ url, body }) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield fetch(url, {
+        method: "post",
+        body: JSON.stringify(body),
+        headers: { "Content-Type": "application/json" },
+    });
+});
+exports.apiPostJSON = apiPostJSON;
