@@ -8,17 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -27,18 +16,21 @@ exports.getAccessToken = exports.getUrlFromShopee = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const async_1 = require("../../middleware/async");
-const url_1 = require("../../utils/url");
-const node_fetch_1 = require("../../utils/node-fetch");
-let __PATH__;
+const config_1 = __importDefault(require("../config"));
 exports.getUrlFromShopee = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    __PATH__ = "/api/v2/shop/auth_partner";
     try {
-        const urlHandler = new url_1.URLHandler(__PATH__);
-        const _a = urlHandler.defaultObjParams("partnerId", "path", "timestamp"), { shop_id, access_token } = _a, objParams = __rest(_a, ["shop_id", "access_token"]);
-        Object.assign(objParams, {
+        const shopee = yield config_1.default.init()
+            .setPath("/api/v2/shop/auth_partner")
+            .setDefaultValues()
+            .encodeToSign("partner_id", "path", "timestamp");
+        const config = shopee.config();
+        const params = shopee.concatParams({
+            partner_id: config.partner_id,
+            timestamp: config.timestamp,
+            sign: config.sign,
             redirect: encodeURIComponent("https://google.co.th"),
         });
-        const url = urlHandler.getURL(objParams);
+        const url = `${config.url}${config.path}?${params}`;
         res.status(200).json({ status: 200, url });
     }
     catch (error) {
@@ -47,20 +39,19 @@ exports.getUrlFromShopee = (0, async_1.asyncHandler)((req, res, next) => __await
     }
 }));
 exports.getAccessToken = (0, async_1.asyncHandler)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    __PATH__ = "/api/v2/auth/token/get";
     try {
         const { code } = req.params;
         if (!code)
             throw new Error("parameter code is required!");
-        const urlHandler = new url_1.URLHandler(__PATH__);
-        const _b = urlHandler.defaultObjParams("partnerId", "path", "timestamp"), { shop_id, access_token } = _b, objParams = __rest(_b, ["shop_id", "access_token"]);
-        const response = yield (0, node_fetch_1.apiPostJSON)({
-            url: urlHandler.getURL(objParams),
-            body: {
-                code,
-                shop_id: urlHandler.shopId,
-                partner_id: urlHandler.partnerId,
-            },
+        const shopee = yield config_1.default.init()
+            .setPath("/api/v2/auth/token/get")
+            .setDefaultValues()
+            .encodeToSign("partner_id", "path", "timestamp");
+        const config = shopee.config();
+        const response = yield shopee.POSTwithJSONBody({
+            code,
+            shop_id: config.shop_id,
+            partner_id: config.partner_id,
         });
         const data = yield response.json();
         fs_1.default.writeFile(path_1.default.join(__dirname, "../../../", "token.json"), JSON.stringify({

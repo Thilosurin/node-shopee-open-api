@@ -2,21 +2,23 @@ import fs from "fs";
 import path from "path";
 import { Request, Response } from "express";
 import { asyncHandler } from "../../middleware/async";
-import { URLHandler } from "../../utils/url";
-import { apiPostJSON } from "../../utils/node-fetch";
-let __PATH__: string;
+import ConfigShopee from "../config";
 
 export const getUrlFromShopee = asyncHandler(
   async (req: Request, res: Response, next: () => PromiseLike<never>) => {
-    __PATH__ = "/api/v2/shop/auth_partner";
     try {
-      const urlHandler = new URLHandler(__PATH__);
-      const { shop_id, access_token, ...objParams } =
-        urlHandler.defaultObjParams("partnerId", "path", "timestamp");
-      Object.assign(objParams, {
+      const shopee = await ConfigShopee.init()
+        .setPath("/api/v2/shop/auth_partner")
+        .setDefaultValues()
+        .encodeToSign("partner_id", "path", "timestamp");
+      const config = shopee.config();
+      const params = shopee.concatParams({
+        partner_id: config.partner_id,
+        timestamp: config.timestamp,
+        sign: config.sign,
         redirect: encodeURIComponent("https://google.co.th"),
       });
-      const url = urlHandler.getURL(objParams);
+      const url = `${config.url}${config.path}?${params}`;
       res.status(200).json({ status: 200, url });
     } catch (error) {
       console.error(error);
@@ -27,22 +29,19 @@ export const getUrlFromShopee = asyncHandler(
 
 export const getAccessToken = asyncHandler(
   async (req: Request, res: Response, next: () => PromiseLike<never>) => {
-    __PATH__ = "/api/v2/auth/token/get";
     try {
       const { code } = req.params;
       if (!code) throw new Error("parameter code is required!");
 
-      const urlHandler = new URLHandler(__PATH__);
-      const { shop_id, access_token, ...objParams } =
-        urlHandler.defaultObjParams("partnerId", "path", "timestamp");
-
-      const response = await apiPostJSON({
-        url: urlHandler.getURL(objParams),
-        body: {
-          code,
-          shop_id: urlHandler.shopId,
-          partner_id: urlHandler.partnerId,
-        },
+      const shopee = await ConfigShopee.init()
+        .setPath("/api/v2/auth/token/get")
+        .setDefaultValues()
+        .encodeToSign("partner_id", "path", "timestamp");
+      const config = shopee.config();
+      const response = await shopee.POSTwithJSONBody({
+        code,
+        shop_id: config.shop_id,
+        partner_id: config.partner_id,
       });
       const data = await response.json();
 
